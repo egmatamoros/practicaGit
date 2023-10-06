@@ -45,7 +45,7 @@ export default {
 
   },
   data: () => ({
-    title: "Junue es mi mejor amiga",
+    title: "Junue dice hola",
     texto: "",
     holder: "Escribe un texto",
     tipo: "password",
