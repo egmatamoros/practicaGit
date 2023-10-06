@@ -4,7 +4,7 @@
       {{ title }}
     </h1>
     <input :type="tipo" v-model="texto" :placeholder="holder" />
-    <button @click="ocultarTexto()">Ocultar</button>
+    <button @click="ocultarTexto()">Mostrar</button>
     <button @click="cambiarTitulo(texto)">Hola mundo</button>
     <div class="tarjetero">
       <!--Aqui empezo la tarjeta nueva-->
