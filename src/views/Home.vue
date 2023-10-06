@@ -4,8 +4,9 @@
       {{ title }}
     </h1>
     <input :type="tipo" v-model="texto" :placeholder="holder" />
-    <button @click="ocultarTexto()">Mostrar</button>
-    <button @click="cambiarTitulo(texto)">Hola mundo</button>
+    <button @click="ocultarTexto()">Ocultar</button>
+    <br>
+    <button @click="cambiarTitulo(texto)">Cambio de titulo</button>
     <div class="tarjetero">
       <!--Aqui empezo la tarjeta nueva-->
       <v-card class="mx-auto tarjeta my-2" color="#26c6da" theme="dark" max-width="400" prepend-icon="mdi-twitter"
