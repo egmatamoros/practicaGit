@@ -1,26 +1,30 @@
 <template>
   <div class="home">
-    <h1>
-      {{ title }}
-    </h1>
-    <input :type="tipo" v-model="texto" :placeholder="holder" />
-    <button @click="ocultarTexto()">Ocultar</button>
-    <br>
-    <button @click="cambiarTitulo(texto)">Cambiar titulo</button>
-    <div class="tarjetero">
-      <!--Aqui empezo la tarjeta nueva-->
-      <v-card class="mx-auto tarjeta my-2" color="#26c6da" theme="dark" max-width="400" prepend-icon="mdi-twitter"
-        title="Twitter" v-for="(item, key) in info" :key="key">
-        <v-icon size="x-large">mdi-Pokeball</v-icon>
-
-        <v-card-text class="text-h5 py-2">
-          {{ item.english }}
-        </v-card-text>
-        <v-card-text class="text-h5 py-2">
-          {{ item.spanish }}
-        </v-card-text>
-      </v-card>
-    </div>
+    <v-row class="d-flex justify-center mt-5">
+      <v-col cols="4">
+        <v-text-field
+          v-model="search"
+          @keypress.enter="searchIcon()"
+          outlined
+          rounded
+          prepend-icon="mdi-search"
+        >
+        </v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="3" v-for="(icon, name) in iconsPagination" :key="name">
+        <IconRendererVue :name="name" :icon="icon"></IconRendererVue>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-pagination
+          v-model="currentPage"
+          :length="Math.ceil(iconlength / pageSize)"
+        ></v-pagination>
+      </v-col>
+    </v-row>
   </div>
 </template>
 <style>
@@ -39,39 +43,82 @@
 }
 </style>
 <script>
+import IconRendererVue from "../components/IconRenderer.vue";
+import { icons } from "../assets/icons.js";
 // @ is an alias to /src
 export default {
-  name: 'Home',
-  components: {
-
-  },
+  name: "Home",
+  components: { IconRendererVue },
   data: () => ({
     title: "David dice hola",
     texto: "",
     holder: "Escribe un texto",
     tipo: "password",
-    info: []
+    info: [],
+    filteredIcons: null,
+    search: "",
+    currentPage: 1,
+    pageSize: 50,
+    icons: icons,
   }),
+  computed: {
+    iconlength() {
+      return this.filteredIcons
+        ? Object.keys(this.filteredIcons).length
+        : Object.keys(this.icons).length;
+    },
+    iconsPagination() {
+      const iconKeys = this.filteredIcons
+        ? Object.keys(this.filteredIcons)
+        : Object.keys(this.icons);
+      const startIndex = this.currentPage * this.pageSize - this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+
+      const paginatedKeys = iconKeys.slice(startIndex, endIndex);
+      const paginatedIcons = {};
+      console.log(paginatedKeys);
+      paginatedKeys.forEach((key) => {
+        if (this.filteredIcons) {
+          paginatedIcons[key] = this.filteredIcons[key];
+        } else {
+          paginatedIcons[key] = this.icons[key];
+        }
+      });
+
+      return paginatedIcons;
+    },
+  },
   methods: {
     cambiarTitulo(titulo) {
-      this.title = titulo
+      this.title = titulo;
     },
     ocultarTexto() {
       if (this.tipo === "password") {
-        this.tipo = "text"
+        this.tipo = "text";
       } else {
-        this.tipo = "password"
+        this.tipo = "password";
       }
-    }
+    },
+    searchIcon() {
+      const search = this.search.toLowerCase();
+      const iconKeys = Object.keys(this.icons);
+      const filteredIcons = {};
+      iconKeys.forEach((key) => {
+        if (key.includes(search)) {
+          filteredIcons[key] = this.icons[key];
+        }
+      });
+
+      this.filteredIcons = filteredIcons;
+    },
   },
   created() {
     fetch("http://smgpuntosdeventa.net/palabras/")
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        this.info = data.palabras
-      })
-  }
-
-}
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        this.info = data.palabras;
+      });
+  },
+};
 </script>
